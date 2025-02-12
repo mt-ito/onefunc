@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 void* r;
-void (*e)(void);
+int (*e)(void);
 
 void initEnvironments()
 {
@@ -25,6 +25,23 @@ int registers()
     return r;
 }
 
+int setRegisters(int a)
+{
+    return r = a;
+}
+
+void setFunc(int (*func)(void))
+{
+    e = func;
+    return e;
+}
+
+int callFunc()
+{
+    r = e();
+    return r;
+}
+
 int returnNull()
 {
     return NULL;
@@ -36,7 +53,14 @@ int main(void)
     initRegisters();
     initEnvironments();
     printf("register r = %d\n", registers());
-    printf("environments r = %x\n", environments());
+    printf("environments e = %x\n", environments());
+    setRegisters(10);
+    setFunc(&returnNull);
+    printf("register r = %d\n", registers());
+    printf("environments e = %x\n", environments());
+    callFunc();
+    printf("register r = %d\n", registers());
+    printf("environments e = %x\n", environments());
     printf("新鮮な無 %d\n", returnNull());
     return 0;
 }
