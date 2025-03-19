@@ -1,17 +1,30 @@
 #include <stdio.h>
 
-void* r;
+void* arg;
+int r;
 int (*e)(void);
+enum CODE
+{
+    INITE,
+    ENV,
+    INITR,
+    REG,
+    SETR,
+    SETF,
+    CALL,
+    CNULL,
+    EVAL
+};
 
 void initEnvironments()
 {
-  e = NULL;
-  return e;
+    e = NULL;
+    return e;
 }
 
 void* environments()
 {
-  return e;
+    return e;
 }
 
 int initRegisters()
@@ -25,14 +38,14 @@ int registers()
     return r;
 }
 
-int setRegisters(int a)
+int setRegisters()
 {
-    return r = a;
+    return r = (int*)arg;
 }
 
-void setFunc(int (*func)(void))
+void setFunc()
 {
-    e = func;
+    e = (int (*)())arg;
     return e;
 }
 
@@ -47,18 +60,60 @@ int returnNull()
     return NULL;
 }
 
+void error(char* message)
+{
+    printf(message);
+    return -1;
+}
+
+void eval()
+{
+    switch (r)
+    {
+        case INITE: initEnvironments(); break;
+        case ENV: environments(); break;
+        case INITR: initRegisters(); break;
+        case REG: registers(); break;
+        case SETR: setRegisters(); break;
+        case SETF: setFunc(); break;
+        case CALL: callFunc(); break;
+        case CNULL: returnNull(); break;
+        case EVAL: eval(); break;
+        default: error("コードがありません");
+    }
+}
+
 int main(void)
 {
     testAll();
-    initRegisters();
-    initEnvironments();
+//    initRegisters();
+//    initEnvironments();
+//    printf("register r = %d\n", registers());
+//    printf("environments e = %x\n", environments());
+//    setRegisters(10);
+//    setFunc(&returnNull);
+//    printf("register r = %d\n", registers());
+//    printf("environments e = %x\n", environments());
+//    callFunc();
+//    printf("register r = %d\n", registers());
+//    printf("environments e = %x\n", environments());
+//    printf("新鮮な無 %d\n", returnNull());
+    r = INITR;
+    eval();
+    r = ENV;
+    eval();
     printf("register r = %d\n", registers());
     printf("environments e = %x\n", environments());
-    setRegisters(10);
-    setFunc(&returnNull);
+    arg = 10;
+    r = SETR;
+    eval();
     printf("register r = %d\n", registers());
     printf("environments e = %x\n", environments());
-    callFunc();
+    arg = &returnNull;
+    r = SETF;
+    eval();
+    r = CALL;
+    eval();
     printf("register r = %d\n", registers());
     printf("environments e = %x\n", environments());
     printf("新鮮な無 %d\n", returnNull());
