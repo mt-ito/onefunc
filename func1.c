@@ -1,9 +1,16 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-void* arg;
-int r;
-int (*e)(void);
-enum CODE
+typedef enum
+{
+    NOTYPE,
+    NUMBER,
+    STRING,
+    FUNCTION,
+    TOKEN
+} TYPE;
+
+typedef enum
 {
     INITE,
     ENV,
@@ -14,9 +21,15 @@ enum CODE
     CALL,
     CNULL,
     EVAL
-};
+} CODE;
 
-void initEnvironments()
+void* arg;
+void* r;
+int (*e)(void);
+CODE c;
+TYPE type=NOTYPE;
+
+void* initEnvironments()
 {
     e = NULL;
     return e;
@@ -27,40 +40,40 @@ void* environments()
     return e;
 }
 
-int initRegisters()
+void* initRegisters()
 {
-    r = 0;
+    r = NULL;
     return r;
 }
 
-int registers()
+void* registers()
 {
     return r;
 }
 
-int setRegisters()
+void* setRegisters()
 {
-    return r = (int*)arg;
+    return r = (int)arg;
 }
 
-void setFunc()
+void* setFunc()
 {
     e = (int (*)())arg;
     return e;
 }
 
-int callFunc()
+void* callFunc()
 {
     r = e();
     return r;
 }
 
-int returnNull()
+void* returnNull()
 {
     return NULL;
 }
 
-void error(char* message)
+int error(char* message)
 {
     printf(message);
     return -1;
@@ -68,7 +81,7 @@ void error(char* message)
 
 void eval()
 {
-    switch (r)
+    switch ((CODE)c)
     {
         case INITE: initEnvironments(); break;
         case ENV: environments(); break;
@@ -83,43 +96,89 @@ void eval()
     }
 }
 
+void convert()
+{
+    switch ((TYPE)arg)
+    {
+        case NOTYPE: error("レジスターが初期状態です"); break;
+        case NUMBER:
+            if (STRING==type)
+            {
+                r = atoi(r);
+                type = NUMBER;
+            } else {
+                error("数字に変換出来ません");
+            };
+            break;
+        case STRING:
+            if (NUMBER==type) {
+                char* s = (char*)malloc(sizeof(char) * 256);
+                sprintf(s, "%d", (int)r);
+                r = s;
+                type = STRING;
+            } else if (STRING!=type) {
+                error("文字列に変換出来ません");
+            };
+            break;
+        case FUNCTION:
+            if (STRING==type) {
+                // e = loadFunction(r);
+                // type = FUNCTION;
+                error("まだ実装されてません");
+            } else {
+                error("文字列リテラル以外は関数になりません");
+            }
+        case TOKEN:
+            if (NUMBER==type) {
+                c = (CODE)r;
+                type = TOKEN;
+            } else if (STRING==type) {
+                // c = tokenize(r);
+                // type = CODE;
+                error("まだ実装してません");
+            } else {
+                error("型エラー");
+            };
+            break;
+        default: error("型エラー"); break;
+    }
+}
+
 int main(void)
 {
-    testAll();
-//    initRegisters();
-//    initEnvironments();
-//    printf("register r = %d\n", registers());
-//    printf("environments e = %x\n", environments());
-//    setRegisters(10);
-//    setFunc(&returnNull);
-//    printf("register r = %d\n", registers());
-//    printf("environments e = %x\n", environments());
-//    callFunc();
-//    printf("register r = %d\n", registers());
-//    printf("environments e = %x\n", environments());
-//    printf("新鮮な無 %d\n", returnNull());
-    r = INITR;
+//    testAll();
+    c = INITR;
     eval();
-    r = ENV;
+    printf("code c = %d\n", c);
+    printf("register r = %d\n", (int)registers());
+    printf("environments e = %p\n", environments());
+    c = INITE;
     eval();
-    printf("register r = %d\n", registers());
-    printf("environments e = %x\n", environments());
+    printf("code c = %d\n", c);
+    printf("register r = %d\n", (int)registers());
+    printf("environments e = %p\n", environments());
     arg = 10;
-    r = SETR;
+    c = SETR;
     eval();
-    printf("register r = %d\n", registers());
-    printf("environments e = %x\n", environments());
+    printf("code c = %d\n", c);
+    printf("register r = %d\n", (int)registers());
+    printf("environments e = %p\n", environments());
     arg = &returnNull;
-    r = SETF;
+    c = SETF;
     eval();
-    r = CALL;
+    printf("code c = %d\n", c);
+    printf("register r = %d\n", (int)registers());
+    printf("environments e = %p\n", environments());
+    c = CALL;
     eval();
-    printf("register r = %d\n", registers());
-    printf("environments e = %x\n", environments());
-    printf("新鮮な無 %d\n", returnNull());
+    printf("code c = %d\n", c);
+    printf("register r = %d\n", (int)registers());
+    printf("environments e = %p\n", environments());
+    printf("新鮮な無 %p\n", returnNull());
     return 0;
 }
 
+/**
 int testAll()
 {
     int pass=0;
@@ -146,15 +205,16 @@ int test(void *(*func)(void), void* checkValue, void* registerValue, void* type_
     printf("checkValue = %d\n", (int*)checkValue);
     printf("registerValue = %d\n", (int*)registerValue);
     printf("return %d\n", func());
-    int type = (int*)type_p;
+    int type = (int)type_p;
     printf("type = %d\n", type);
     if(0 == type){
             return NULL == func();
     }else if(1 == type){
             r = registerValue;
-            int v = (int*)checkValue;
+            int v = (int)checkValue;
             int a = func();
             printf("test %d == %d\n", v, a);
             return v == a;
     }
 }
+**/
