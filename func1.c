@@ -20,7 +20,8 @@ typedef enum
     SETF,
     CALL,
     CNULL,
-    EVAL
+    EVAL,
+    CONVERT
 } CODE;
 
 void* arg;
@@ -53,6 +54,7 @@ void* registers()
 
 void* setRegisters()
 {
+    type = NUMBER;
     return r = (int)arg;
 }
 
@@ -92,6 +94,7 @@ void eval()
         case CALL: callFunc(); break;
         case CNULL: returnNull(); break;
         case EVAL: eval(); break;
+        case CONVERT: convert(); break;
         default: error("コードがありません");
     }
 }
@@ -175,6 +178,19 @@ int main(void)
     printf("register r = %d\n", (int)registers());
     printf("environments e = %p\n", environments());
     printf("新鮮な無 %p\n", returnNull());
+    c = CONVERT;
+    arg = STRING;
+    eval();
+    printf("code c = %d\n", c);
+    printf("register r = %s\n", (char*)registers());
+    printf("register r = %p\n", registers());
+    printf("environments e = %p\n", environments());
+    c = CONVERT;
+    arg = NUMBER;
+    eval();
+    printf("code c = %d\n", c);
+    printf("register r = %d\n", (int)registers());
+    printf("environments e = %p\n", environments());
     return 0;
 }
 
