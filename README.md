@@ -18,6 +18,8 @@ https://knowledge.infiniteloop.co.jp/open.knowledge/view/24121
 https://knowledge.infiniteloop.co.jp/open.knowledge/view/24190
 ## バイトコードにしてみる準備ってやつ
 https://knowledge.infiniteloop.co.jp/open.knowledge/view/24278
+## 型ってやつを考えるために邪悪なconvert関数を生やすってやつ
+https://knowledge.infiniteloop.co.jp/open.knowledge/view/24442
 
 ## バイトコードをJITによって動的にネイティブコードへするドキュメント
 https://gcc.gnu.org/onlinedocs/jit/
