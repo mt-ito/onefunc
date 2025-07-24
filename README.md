@@ -23,3 +23,5 @@ https://knowledge.infiniteloop.co.jp/open.knowledge/view/24442
 
 ## バイトコードをJITによって動的にネイティブコードへするドキュメント
 https://gcc.gnu.org/onlinedocs/jit/
+
+あああああああああああああああああああああああ
